@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Rocket : MonoBehaviour{
     [SerializeField]float rcsThrust = 100f;
@@ -15,17 +16,8 @@ public class Rocket : MonoBehaviour{
 
     // Update is called once per frame
     void Update(){
+        Thrust();
         Rotate();
-
-        //GetKey applies all the same time and will report the status of the named key
-        if (Input.GetKey(KeyCode.Space)){
-            Thrust();
-        //adding forcein the direction the ship is facing
-        }
-        else{
-            audioSource.Stop();
-        }
-        
     }
 
     private void Rotate(){
@@ -37,24 +29,52 @@ public class Rocket : MonoBehaviour{
         if(Input.GetKey(KeyCode.A)){
             //rotating left about the z-axis
             transform.Rotate(Vector3.forward * rotationThisFrame);
-            rigidBody.AddRelativeForce(Vector3.left);
+            //rigidBody.AddRelativeForce(Vector3.left);
             
         }
         //rotates to the right
         else if(Input.GetKey(KeyCode.D)){
             //rotate right about the z axis
             transform.Rotate(-Vector3.forward * rotationThisFrame);
-            rigidBody.AddRelativeForce(Vector3.right);
+            //rigidBody.AddRelativeForce(Vector3.right);
         }
         //resume physics control
         rigidBody.freezeRotation = false;
     }
 
+    void OnCollisionEnter(Collision collision){
+        switch(collision.gameObject.tag){
+            case "Friendly":
+                print("Friendly");
+                break;
+
+            case "Finish":
+                print("Hit Finish");
+                SceneManager.LoadScene(1);
+                break;
+            
+            default:
+                print("Deadly");
+                SceneManager.LoadScene(0);
+                break;
+        }
+    }
+
     private void Thrust(){
-        rigidBody.AddRelativeForce(Vector3.up * mainThrust *Time.deltaTime);
-        //so audio doesnt layer
-        if(!audioSource.isPlaying){
-            audioSource.Play();
+        //GetKey applies all the same time and will report the status of the named key
+        if (Input.GetKey(KeyCode.Space)){
+            //adding forcein the direction the ship is facing
+            rigidBody.AddRelativeForce(Vector3.up * mainThrust *Time.deltaTime);
+            //so audio doesnt layer
+            if(!audioSource.isPlaying){
+                audioSource.Play();
+            }  
+        }
+        else {
+            audioSource.Stop();    
+       
         }
     }
 }
+
+       
