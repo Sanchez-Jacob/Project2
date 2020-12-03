@@ -8,6 +8,11 @@ public class Rocket : MonoBehaviour{
     [SerializeField]float mainThrust = 100f;
     Rigidbody rigidBody;
     AudioSource audioSource;
+
+    enum State {Alive, Dying, Transcending }
+    State state = State.Alive;
+    
+
     // Start is called before the first frame update
     void Start(){
         rigidBody = GetComponent<Rigidbody>();
@@ -49,9 +54,10 @@ public class Rocket : MonoBehaviour{
                 break;
 
             case "Finish":
-                print("Hit Finish");
-                SceneManager.LoadScene(1);
+                state = State.Transcending;
+                Invoke("LoadNextScene", 1f);
                 break;
+                
             
             default:
                 print("Deadly");
@@ -74,6 +80,11 @@ public class Rocket : MonoBehaviour{
             audioSource.Stop();    
        
         }
+    }
+
+    private void LoadNextScene(){
+        //TODO : allow for more than 2 levels
+        SceneManager.LoadScene(1);
     }
 }
 
